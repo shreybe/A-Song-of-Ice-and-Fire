@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>MODIS Wildfire Hotspots — Interactive Map (DSC 106)</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="css/style.css" />
+  </head>
+  <body>
+    <header class="hero">
+      <span class="tag">Project 3 · NASA MODIS / FIRMS</span>
+      <h1>Where are satellite-detected fire hotspots concentrated—and how bright are they?</h1>
+      <p class="lead">
+        MODIS thermal anomalies mark likely fires and other heat sources. This prototype maps each
+        detection as a small spark (ZipDecode-style luminosity on a dark field), supports dynamic
+        filtering and brushing, and reveals details on demand when you click a spark.
+      </p>
+    </header>
+
+    <section id="explore">
+      <h2>Exploratory views</h2>
+      <p class="data-note">
+        <strong>Data transformation:</strong> Points follow the NASA FIRMS MODIS_NRT CSV schema
+        (brightness Kelvin, FRP in MW, acquisition date/time, Terra/Aqua, confidence). Region
+        splits longitude into West / Central / East for coarse geography. The bundled CSV is a
+        <em>demo ensemble</em> for layout and interaction testing; replace it with a FIRMS export
+        using <code>scripts/fetch_firms_modis.py</code> and your free MAP_KEY for live MODIS.
+      </p>
+      <div class="chart-grid">
+        <div class="chart-card">
+          <h3>Detections by acquisition date</h3>
+          <svg id="chart-date" viewBox="0 0 320 180"></svg>
+        </div>
+        <div class="chart-card">
+          <h3>Detections by region (longitude bands)</h3>
+          <svg id="chart-region" viewBox="0 0 320 180"></svg>
+        </div>
+        <div class="chart-card">
+          <h3>Brightness (channel 21/22) distribution</h3>
+          <svg id="chart-brightness" viewBox="0 0 320 180"></svg>
+        </div>
+        <div class="chart-card">
+          <h3>Satellite (Terra vs Aqua)</h3>
+          <svg id="chart-satellite" viewBox="0 0 320 180"></svg>
+        </div>
+        <div class="chart-card">
+          <h3>Day vs night passes</h3>
+          <svg id="chart-daynight" viewBox="0 0 320 180"></svg>
+        </div>
+        <div class="chart-card">
+          <h3>FRP vs brightness (brush to filter map)</h3>
+          <svg id="chart-scatter" viewBox="0 0 320 200"></svg>
+        </div>
+      </div>
+    </section>
+
+    <section id="interactive">
+      <h2>Interactive map</h2>
+      <div class="controls">
+        <div class="control">
+          <strong>Acquisition date range</strong>
+          <span id="date-label"></span>
+          <input type="range" id="date-min" />
+          <input type="range" id="date-max" />
+        </div>
+        <div class="control">
+          <strong>Minimum confidence (%)</strong>
+          <span id="conf-label"></span>
+          <input type="range" id="confidence" min="0" max="100" step="5" value="0" />
+        </div>
+        <div class="control">
+          <strong>Pass</strong>
+          <div class="toggle-row">
+            <button type="button" id="btn-day" class="active">Day</button>
+            <button type="button" id="btn-night" class="active">Night</button>
+          </div>
+        </div>
+        <div class="control">
+          <strong>Brush</strong>
+          <button type="button" id="btn-clear-brush">Clear FRP vs brightness brush</button>
+        </div>
+        <div class="control">
+          <strong>Reset</strong>
+          <button type="button" id="btn-reset">Reset all filters</button>
+        </div>
+      </div>
+
+      <div class="map-layout">
+        <div id="map-wrap">
+          <svg id="map-svg" viewBox="0 0 960 560" aria-label="Map of United States with fire sparks"></svg>
+        </div>
+        <aside class="detail-panel" id="detail-panel">
+          <h3>Details on demand</h3>
+          <p class="detail-empty" id="detail-empty">Click a spark to inspect one hotspot.</p>
+          <dl id="detail-dl" hidden></dl>
+        </aside>
+      </div>
+    </section>
+
+    <section id="writeup" class="writeup">
+      <h2>Checkpoint write-up (draft)</h2>
+      <h3>Rationale</h3>
+      <p>
+        Sparks use position for geography and luminosity for intensity (radius scales with FRP, warm
+        color for brightness). Dynamic queries (date, confidence, day/night) narrow the population;
+        brushing on FRP vs brightness supports linked selection like lecture linked views. Pan/zoom
+        assists spatial comparison without cluttering static ink.
+      </p>
+      <h3>Alternatives considered</h3>
+      <ul>
+        <li>Choropleth by county—obscures point-level MODIS resolution; chose dot marks.</li>
+        <li>Constant-size dots—understates high-FRP events; chose sqrt scale on FRP.</li>
+      </ul>
+      <h3>Development process</h3>
+      <p class="placeholder">
+        Replace with team names, hours estimate, and division of labor for your checkpoint video.
+      </p>
+    </section>
+
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>
+    <script src="js/fire-data.js"></script>
+    <script src="js/main.js"></script>
+  </body>
+</html>

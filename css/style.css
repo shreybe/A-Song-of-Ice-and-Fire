@@ -1,0 +1,267 @@
+:root {
+  --bg: #0a0a0f;
+  --panel: #12121a;
+  --text: #e8e6e2;
+  --muted: #9a958c;
+  --spark: #ffd88a;
+  --accent: #6eb5ff;
+  --border: #2a2a36;
+  font-family: "IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.55;
+}
+
+a {
+  color: var(--accent);
+}
+
+header.hero {
+  padding: 2.5rem 1.5rem 1rem;
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+header.hero h1 {
+  font-weight: 600;
+  font-size: 1.75rem;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.35rem;
+}
+
+header.hero .lead {
+  color: var(--muted);
+  max-width: 52rem;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.tag {
+  display: inline-block;
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+
+section {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 1.25rem 1.5rem 2rem;
+}
+
+section h2 {
+  font-size: 1.15rem;
+  font-weight: 600;
+  margin: 0 0 0.75rem;
+}
+
+.data-note {
+  font-size: 0.88rem;
+  color: var(--muted);
+  border-left: 3px solid var(--border);
+  padding-left: 0.85rem;
+  margin-bottom: 1.25rem;
+}
+
+.chart-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem 1.25rem;
+}
+
+.chart-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.65rem 0.75rem 0.5rem;
+}
+
+.chart-card h3 {
+  margin: 0 0 0.35rem;
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: var(--muted);
+}
+
+.chart-card svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.axis text {
+  fill: var(--muted);
+  font-size: 10px;
+}
+
+.axis path,
+.axis line {
+  stroke: var(--border);
+}
+
+.bar {
+  fill: #5a8fd8;
+  opacity: 0.85;
+}
+
+.bar:hover {
+  opacity: 1;
+}
+
+.spark-dot {
+  cursor: pointer;
+}
+
+.spark-dot.selected {
+  stroke: #fff;
+  stroke-width: 0.5px;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+  align-items: flex-end;
+  margin-bottom: 1rem;
+  padding: 1rem;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+
+.control {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  font-size: 0.82rem;
+  color: var(--muted);
+}
+
+.control strong {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.control input[type="range"] {
+  width: 180px;
+}
+
+.toggle-row {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+  background: #2a3142;
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 0.45rem 0.85rem;
+}
+
+button:hover {
+  background: #343d52;
+}
+
+button.active {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.map-layout {
+  display: grid;
+  grid-template-columns: 1fr minmax(240px, 300px);
+  gap: 1rem;
+  align-items: start;
+}
+
+@media (max-width: 880px) {
+  .map-layout {
+    grid-template-columns: 1fr;
+  }
+}
+
+#map-wrap {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+#map-wrap svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.state-boundary {
+  fill: none;
+  stroke: #3a3a48;
+  stroke-width: 0.6;
+}
+
+.detail-panel {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1rem 1.1rem;
+  min-height: 200px;
+}
+
+.detail-panel h3 {
+  margin: 0 0 0.75rem;
+  font-size: 1rem;
+}
+
+.detail-panel dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.35rem 0.75rem;
+  font-size: 0.88rem;
+}
+
+.detail-panel dt {
+  color: var(--muted);
+}
+
+.detail-panel dd {
+  margin: 0;
+}
+
+.detail-empty {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.writeup {
+  font-size: 0.95rem;
+  color: #d5d2cc;
+}
+
+.writeup h3 {
+  font-size: 1rem;
+  margin: 1.25rem 0 0.5rem;
+}
+
+.writeup ul {
+  padding-left: 1.2rem;
+}
+
+.writeup .placeholder {
+  color: var(--muted);
+  font-style: italic;
+}
