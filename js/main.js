@@ -80,7 +80,7 @@
     const bw = host.getBoundingClientRect().width;
     const fallbackW = document.querySelector(".fullscreen-map")?.clientWidth ?? 640;
     const w = Math.max(240, Math.floor(bw > 12 ? bw : fallbackW));
-    const h = 56;
+    const h = 50;
     const innerW = w - margin.left - margin.right;
     const innerH = h - margin.top - margin.bottom;
     const maxC = d3.max(counts) || 1;
