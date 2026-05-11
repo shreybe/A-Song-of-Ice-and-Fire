@@ -45,8 +45,13 @@ body {
   flex-wrap: wrap;
   padding: 0.55rem 1.1rem 0.65rem;
   background: #0d0f17;
-  border-bottom: 1px solid var(--border);
+  border-top: 1px solid var(--border);
+  border-bottom: none;
   pointer-events: none;
+}
+
+.map-chrome-head--below-map .chrome-cluster {
+  max-width: min(100%, 48rem);
 }
 
 .map-chrome-head a {
@@ -102,6 +107,7 @@ body {
   z-index: 5;
   padding: 0.15rem 0.55rem 0.25rem;
   background: rgba(10, 12, 20, 0.98);
+  border-top: 1px solid rgba(55, 60, 82, 0.85);
   border-bottom: 1px solid rgba(55, 60, 82, 0.85);
   pointer-events: auto;
 }
@@ -163,7 +169,7 @@ body {
   align-items: stretch;
   gap: 0.55rem;
   min-height: 0;
-  padding: 0.2rem 0.45rem 0.25rem;
+  padding: 0 0.45rem 0.15rem;
 }
 
 .fullscreen-map .map-main {

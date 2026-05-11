@@ -16,40 +16,6 @@
   <body>
     <div class="app-viewport">
       <section id="interactive" class="fullscreen-map" aria-label="Full-screen wildfire map">
-        <header class="map-chrome-head">
-          <div class="chrome-cluster">
-            <div class="chrome-title">
-              <span class="tag">DSC 106 · NASA FIRMS · MODIS_NRT</span>
-              <h1 class="map-title">Where do U.S. thermal hotspots cluster in space and time?</h1>
-              <p class="map-sub">
-                Each point is one MODIS near-real-time detection (subset: CONUS demo CSV). Color encodes
-                channel brightness (K); size encodes FRP (MW). Filters below subset rows without
-                reprojecting—see write-up for transformations.
-              </p>
-            </div>
-            <div class="map-legend" aria-label="Map legend">
-              <span class="legend-title">Hotspot color → brightness (K)</span>
-              <span class="legend-scale" aria-hidden="true"></span>
-              <span class="legend-low">cooler</span>
-              <span class="legend-high">hotter</span>
-            </div>
-          </div>
-          <div class="chrome-actions">
-            <a class="writeup-jump" href="#writeup">Design write-up &amp; process ↓</a>
-            <span class="chrome-hint">
-              Wheel / pinch zoom · drag pan · tap a hotspot · double-click timeline to reset dates
-            </span>
-          </div>
-        </header>
-
-        <div id="timeline-host" class="timeline-host">
-          <p class="timeline-caption">
-            Daily detection rhythm (respects confidence &amp; pass filters) · click a bar to snap the date sliders
-            to that day
-          </p>
-          <svg id="timeline-svg" role="img" aria-label="Daily detection counts across the dataset timeline"></svg>
-        </div>
-
         <div class="map-workspace">
           <div class="map-main" aria-label="Map view">
             <div class="map-canvas-stack">
@@ -84,6 +50,40 @@
             </aside>
           </div>
         </div>
+
+        <div id="timeline-host" class="timeline-host">
+          <p class="timeline-caption">
+            Daily detection rhythm (respects confidence &amp; pass filters) · click a bar to snap the date sliders
+            to that day
+          </p>
+          <svg id="timeline-svg" role="img" aria-label="Daily detection counts across the dataset timeline"></svg>
+        </div>
+
+        <header class="map-chrome-head map-chrome-head--below-map">
+          <div class="chrome-cluster">
+            <div class="chrome-title">
+              <span class="tag">DSC 106 · NASA FIRMS · MODIS_NRT</span>
+              <h1 class="map-title">Where do U.S. thermal hotspots cluster in space and time?</h1>
+              <p class="map-sub">
+                Each point is one MODIS near-real-time detection (subset: CONUS demo CSV). Color encodes
+                channel brightness (K); size encodes FRP (MW). Filters below subset rows without
+                reprojecting—see write-up for transformations.
+              </p>
+            </div>
+            <div class="map-legend" aria-label="Map legend">
+              <span class="legend-title">Hotspot color → brightness (K)</span>
+              <span class="legend-scale" aria-hidden="true"></span>
+              <span class="legend-low">cooler</span>
+              <span class="legend-high">hotter</span>
+            </div>
+          </div>
+          <div class="chrome-actions">
+            <a class="writeup-jump" href="#writeup">Design write-up &amp; process ↓</a>
+            <span class="chrome-hint">
+              Wheel / pinch zoom · drag pan · tap a hotspot · double-click timeline to reset dates
+            </span>
+          </div>
+        </header>
 
         <div class="controls">
           <div class="control">
