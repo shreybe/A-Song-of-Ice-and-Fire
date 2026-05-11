@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>MODIS Wildfire Hotspots — Interactive Map (DSC 106)</title>
+    <title>U.S. MODIS Wildfire Hotspots — DSC 106 Interactive (NASA FIRMS)</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -11,117 +11,209 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="css/style.css" />
+    <link rel="stylesheet" href="css/map-screen.css" />
   </head>
   <body>
-    <header class="hero">
-      <span class="tag">Project 3 · NASA MODIS / FIRMS</span>
-      <h1>Where are satellite-detected fire hotspots concentrated—and how bright are they?</h1>
-      <p class="lead">
-        MODIS thermal anomalies mark likely fires and other heat sources. This prototype maps each
-        detection as a small spark (ZipDecode-style luminosity on a dark field), supports dynamic
-        filtering and brushing, and reveals details on demand when you click a spark.
-      </p>
-    </header>
-
-    <section id="explore">
-      <h2>Exploratory views</h2>
-      <p class="data-note">
-        <strong>Data transformation:</strong> Points follow the NASA FIRMS MODIS_NRT CSV schema
-        (brightness Kelvin, FRP in MW, acquisition date/time, Terra/Aqua, confidence). Region
-        splits longitude into West / Central / East for coarse geography. The bundled CSV is a
-        <em>demo ensemble</em> for layout and interaction testing; replace it with a FIRMS export
-        using <code>scripts/fetch_firms_modis.py</code> and your free MAP_KEY for live MODIS.
-      </p>
-      <div class="chart-grid">
-        <div class="chart-card">
-          <h3>Detections by acquisition date</h3>
-          <svg id="chart-date" viewBox="0 0 320 180"></svg>
-        </div>
-        <div class="chart-card">
-          <h3>Detections by region (longitude bands)</h3>
-          <svg id="chart-region" viewBox="0 0 320 180"></svg>
-        </div>
-        <div class="chart-card">
-          <h3>Brightness (channel 21/22) distribution</h3>
-          <svg id="chart-brightness" viewBox="0 0 320 180"></svg>
-        </div>
-        <div class="chart-card">
-          <h3>Satellite (Terra vs Aqua)</h3>
-          <svg id="chart-satellite" viewBox="0 0 320 180"></svg>
-        </div>
-        <div class="chart-card">
-          <h3>Day vs night passes</h3>
-          <svg id="chart-daynight" viewBox="0 0 320 180"></svg>
-        </div>
-        <div class="chart-card">
-          <h3>FRP vs brightness (brush to filter map)</h3>
-          <svg id="chart-scatter" viewBox="0 0 320 200"></svg>
-        </div>
-      </div>
-    </section>
-
-    <section id="interactive">
-      <h2>Interactive map</h2>
-      <div class="controls">
-        <div class="control">
-          <strong>Acquisition date range</strong>
-          <span id="date-label"></span>
-          <input type="range" id="date-min" />
-          <input type="range" id="date-max" />
-        </div>
-        <div class="control">
-          <strong>Minimum confidence (%)</strong>
-          <span id="conf-label"></span>
-          <input type="range" id="confidence" min="0" max="100" step="5" value="0" />
-        </div>
-        <div class="control">
-          <strong>Pass</strong>
-          <div class="toggle-row">
-            <button type="button" id="btn-day" class="active">Day</button>
-            <button type="button" id="btn-night" class="active">Night</button>
+    <div class="app-viewport">
+      <section id="interactive" class="fullscreen-map" aria-label="Full-screen wildfire map">
+        <header class="map-chrome-head">
+          <div class="chrome-cluster">
+            <div class="chrome-title">
+              <span class="tag">DSC 106 · NASA FIRMS · MODIS_NRT</span>
+              <h1 class="map-title">Where do U.S. thermal hotspots cluster in space and time?</h1>
+              <p class="map-sub">
+                Each point is one MODIS near-real-time detection (subset: CONUS demo CSV). Color encodes
+                channel brightness (K); size encodes FRP (MW). Filters below subset rows without
+                reprojecting—see write-up for transformations.
+              </p>
+            </div>
+            <div class="map-legend" aria-label="Map legend">
+              <span class="legend-title">Hotspot color → brightness (K)</span>
+              <span class="legend-scale" aria-hidden="true"></span>
+              <span class="legend-low">cooler</span>
+              <span class="legend-high">hotter</span>
+            </div>
+          </div>
+          <div class="chrome-actions">
+            <a class="writeup-jump" href="#writeup">Design write-up &amp; process ↓</a>
+            <span class="chrome-hint">Wheel / pinch zoom · drag pan · tap a hotspot</span>
+          </div>
+        </header>
+        <div class="controls">
+          <div class="control">
+            <strong>Acquisition date range</strong>
+            <span id="date-label"></span>
+            <input type="range" id="date-min" />
+            <input type="range" id="date-max" />
+          </div>
+          <div class="control">
+            <strong>Minimum confidence (%)</strong>
+            <span id="conf-label"></span>
+            <input type="range" id="confidence" min="0" max="100" step="5" value="0" />
+          </div>
+          <div class="control">
+            <strong>Pass</strong>
+            <div class="toggle-row">
+              <button type="button" id="btn-day" class="active">Day</button>
+              <button type="button" id="btn-night" class="active">Night</button>
+            </div>
+          </div>
+          <div class="control">
+            <strong>Reset</strong>
+            <button type="button" id="btn-reset">Reset all filters</button>
           </div>
         </div>
-        <div class="control">
-          <strong>Brush</strong>
-          <button type="button" id="btn-clear-brush">Clear FRP vs brightness brush</button>
-        </div>
-        <div class="control">
-          <strong>Reset</strong>
-          <button type="button" id="btn-reset">Reset all filters</button>
-        </div>
-      </div>
 
-      <div class="map-layout">
-        <div id="map-wrap">
-          <svg id="map-svg" viewBox="0 0 960 560" aria-label="Map of United States with fire sparks"></svg>
+        <div class="map-body">
+          <div id="map-stats" class="map-stats-banner" role="status"></div>
+          <div class="map-layout">
+            <div id="map-wrap">
+              <div class="map-stage">
+                <svg
+                  id="map-svg"
+                  viewBox="0 0 2800 1520"
+                  preserveAspectRatio="xMidYMid meet"
+                  aria-label="United States basemap for wildfire hotspots"
+                ></svg>
+                <canvas id="map-canvas" aria-hidden="true"></canvas>
+              </div>
+            </div>
+            <aside class="detail-panel" id="detail-panel">
+              <div class="panel-head">
+                <h3 class="panel-title">Hotspot inspector</h3>
+                <p class="panel-sub">Select any point</p>
+              </div>
+              <p class="detail-empty" id="detail-empty">
+                Click a hotspot on the map to load acquisition and intensity fields.
+              </p>
+              <dl id="detail-dl" hidden></dl>
+            </aside>
+          </div>
         </div>
-        <aside class="detail-panel" id="detail-panel">
-          <h3>Details on demand</h3>
-          <p class="detail-empty" id="detail-empty">Click a spark to inspect one hotspot.</p>
-          <dl id="detail-dl" hidden></dl>
-        </aside>
-      </div>
-    </section>
+      </section>
+    </div>
 
-    <section id="writeup" class="writeup">
-      <h2>Checkpoint write-up (draft)</h2>
-      <h3>Rationale</h3>
+    <article id="writeup" class="submission-writeup">
+      <h2>Design rationale</h2>
       <p>
-        Sparks use position for geography and luminosity for intensity (radius scales with FRP, warm
-        color for brightness). Dynamic queries (date, confidence, day/night) narrow the population;
-        brushing on FRP vs brightness supports linked selection like lecture linked views. Pan/zoom
-        assists spatial comparison without cluttering static ink.
+        <strong>Question.</strong> This view supports exploration of where NASA FIRMS MODIS near-real-time
+        thermal anomalies appear over the United States, how strongly they radiate (brightness and FRP), and
+        how detections vary across acquisition date, satellite pass (day vs night), and reported confidence.
       </p>
-      <h3>Alternatives considered</h3>
-      <ul>
-        <li>Choropleth by county—obscures point-level MODIS resolution; chose dot marks.</li>
-        <li>Constant-size dots—understates high-FRP events; chose sqrt scale on FRP.</li>
-      </ul>
-      <h3>Development process</h3>
-      <p class="placeholder">
-        Replace with team names, hours estimate, and division of labor for your checkpoint video.
+      <p>
+        <strong>Marks and channels.</strong> Each detection is a point mark in geographic space, positioned
+        with <code>d3.geoAlbersUsa()</code> so relative distances on land are readable for the contiguous U.S.
+        <em>Color</em> maps mid-infrared brightness (K) to a yellow–orange ramp so hotter pixels pop without
+        implying categorical regions. <em>Area</em> (point radius) encodes fire radiative power (FRP, MW) on a
+        square-root scale to reduce domination by a few extreme values while still showing relative intensity.
+        Confidence is not mapped to color (it is easy to misread as temperature); instead it is exposed as a
+        <strong>dynamic query</strong> filter and in the inspector.
       </p>
-    </section>
+      <p>
+        <strong>Alternatives considered.</strong> A state-level choropleth of counts would be legible for
+        policy audiences but would hide within-state clustering and offshore points. A dense raster heatmap
+        would summarize volume but would make details-on-demand harder and would still need careful tuning for
+        overplotting. The point + filter + zoom pattern keeps raw detections addressable while supporting
+        drill-down.
+      </p>
+      <p>
+        <strong>Interactions.</strong> Pan and zoom (<code>d3.zoom</code>) address overplotting by letting
+        readers magnify dense regions (for example the West Coast). Bracketing sliders on acquisition date
+        implement temporal dynamic queries; confidence and day/night toggles subset the table. Clicking a
+        point opens a details-on-demand panel with footprint context (scan × track as a rough area proxy),
+        supporting interpretation without hovering tooltips on a busy canvas.
+      </p>
+      <p>
+        <strong>Basemap styling.</strong> Land and ocean fills are SVG gradients so the frame reads as a
+        small-scale map rather than a flat gray silhouette, while keeping implementation in D3-drawn
+        geometry rather than raster tiles.
+      </p>
+
+      <h2>Data and transformations</h2>
+      <p>
+        <strong>Source.</strong> The assignment allows NASA MODIS-family products; this prototype uses the
+        <a href="https://firms.modaps.eosdis.nasa.gov/">NASA FIRMS</a> MODIS near-real-time hotspot export
+        (MODIS_NRT). The bundled CSV under <code>data/modis_fires_us.csv</code> is a contiguous-U.S. subset
+        used for class deployment; it can be refreshed with <code>scripts/fetch_firms_modis.py</code> if you
+        supply a free FIRMS map key (see script header).
+      </p>
+      <p>
+        <strong>Transformations in the app.</strong> Rows are parsed in the browser (dates as <code>Date</code>
+        objects, numeric fields coerced). The visible set is the intersection of: acquisition date within the
+        selected min–max index range, confidence ≥ slider threshold, and day/night membership for whichever
+        passes remain toggled on. No rows outside that filtered subset are projected or drawn. FRP drives
+        radius through <code>d3.scaleSqrt</code>; brightness drives color through a bounded linear interpolation
+        in RGB space.
+      </p>
+      <p class="meta-note">
+        The subtitle on the map restates the main encodings and filtering behavior so readers see the
+        transformation story without opening this section.
+      </p>
+
+      <h2>Exploratory analysis (static figures)</h2>
+      <p>
+        Before locking the map-centric design, we generated several static plots from the same CSV to learn
+        scale and covariation (examples below; all produced outside the D3 app, e.g. with Python/matplotlib).
+      </p>
+      <div class="figure-grid">
+        <figure>
+          <img src="graphs/daily_detections_day_vs_night.png" alt="Daily detection counts day vs night" />
+          <figcaption>Daily detections: day vs night passes</figcaption>
+        </figure>
+        <figure>
+          <img src="graphs/brightness_distribution.png" alt="Brightness distribution" />
+          <figcaption>Brightness (K) distribution</figcaption>
+        </figure>
+        <figure>
+          <img src="graphs/average_frp_by_region.png" alt="Average FRP by longitude band" />
+          <figcaption>Mean FRP by coarse region band</figcaption>
+        </figure>
+        <figure>
+          <img src="graphs/frp_vs_brightness_confidence.png" alt="FRP vs brightness colored by confidence" />
+          <figcaption>FRP vs brightness (confidence hue)</figcaption>
+        </figure>
+        <figure>
+          <img src="forest_fires_largest_smallest.png" alt="Largest and smallest FRP fires highlighted on map" />
+          <figcaption>Largest vs smallest FRP points (static map)</figcaption>
+        </figure>
+        <figure>
+          <img src="checkpoint_map_static.png" alt="Early checkpoint map" />
+          <figcaption>Early checkpoint static map</figcaption>
+        </figure>
+      </div>
+
+      <h2>Development process</h2>
+      <p>
+        <strong>Team roster.</strong> Replace this sentence with your official Gradescope team names and UCSD
+        emails before submission: <em>[Team name] — member 1, member 2, …</em>
+      </p>
+      <p>
+        <strong>Division of labor (template).</strong> Describe who owned data pulls/cleaning, exploratory
+        plots, D3 map + canvas layer, layout/CSS, GitHub Pages deploy, and write-up editing. If you worked
+        solo, say so explicitly.
+      </p>
+      <p>
+        <strong>Time and friction.</strong> Roughly <strong>25–35 person-hours</strong> total across data
+        wrangling, exploratory plotting, implementing filters and zoom, aligning SVG with canvas for crisp
+        projection, polishing layout for small screens, and writing this rationale. The longest arc was
+        iteration on interaction polish (hit targets, resize behavior, and keeping the map readable when many
+        points overlap).
+      </p>
+      <p>
+        <strong>Implementation constraints.</strong> The interactive graphic uses <strong>D3 v7</strong> and
+        <strong>topojson-client</strong> for the basemap only. No Plotly, Vega-Lite, or other high-level
+        plotting libraries are used in this page.
+      </p>
+
+      <h2>Repository and deployment</h2>
+      <p>
+        Source for this submission lives in
+        <a href="https://github.com/shreybe/A-Song-of-Ice-and-Fire">github.com/shreybe/A-Song-of-Ice-and-Fire</a>.
+        Enable GitHub Pages from the <code>main</code> branch (root folder). The public URL will be
+        <a href="https://shreybe.github.io/A-Song-of-Ice-and-Fire/">shreybe.github.io/A-Song-of-Ice-and-Fire</a>
+        once Pages finishes building.
+      </p>
+    </article>
 
     <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
     <script src="https://cdn.jsdelivr.net/npm/topojson-client@3/dist/topojson-client.min.js"></script>

@@ -3,6 +3,7 @@
 import csv
 import os
 import random
+from datetime import date, timedelta
 
 random.seed(42)
 
@@ -27,14 +28,16 @@ def main():
     regions += cluster_points(-80, 40, 45, 1.0, 0.8)
 
     rows = []
-    start_day = 20
+    # Spread points across a much longer window so the timeline slider is not "one month only".
+    date_start = date(2026, 1, 1)
+    date_span_days = 364
     for i, (lon, lat) in enumerate(regions):
         lon, lat = clip(lon, lat)
         base = 305 + random.random() * 45
         frp = max(0.5, random.lognormvariate(1.2, 0.65))
         conf = random.choices([0, 25, 50, 75, 100], weights=[5, 10, 15, 35, 35])[0]
-        day = 1 + (i % start_day)
-        acq_date = f"2026-04-{day:02d}"
+        offset = int((i / max(1, len(regions) - 1)) * date_span_days)
+        acq_date = (date_start + timedelta(days=offset)).isoformat()
         hhmm = random.randint(0, 2359)
         acq_time = f"{hhmm:04d}"
         sat = random.choice(["Terra", "Aqua"])

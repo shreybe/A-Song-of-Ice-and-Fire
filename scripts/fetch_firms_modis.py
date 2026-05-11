@@ -18,7 +18,8 @@ import urllib.request
 
 # CONUS approximate extent
 LON_MIN, LAT_MIN, LON_MAX, LAT_MAX = -125.0, 24.0, -66.0, 49.5
-DAY_RANGE = 10
+# Pull the largest timeline window allowed by the FIRMS area endpoint.
+DAY_RANGE = 365
 SOURCE = "MODIS_NRT"
 AREA = f"{LON_MIN},{LAT_MIN},{LON_MAX},{LAT_MAX}"
 
