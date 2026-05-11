@@ -10,17 +10,15 @@ body {
   background: #0a0c12;
 }
 
-/* Map fills one viewport; write-up scrolls below on the same page. */
 .app-viewport {
   position: relative;
   height: 100dvh;
-  min-height: 560px;
+  min-height: 480px;
   max-height: 100dvh;
   overflow: hidden;
 }
 
 .fullscreen-map {
-  --rail-width: min(340px, 36vw);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -31,243 +29,30 @@ body {
   height: 100%;
   min-height: 0;
   overflow: hidden;
-  /* Slightly larger base type inside the interactive shell (write-up uses global html size). */
-  font-size: clamp(16px, 0.45vw + 14.5px, 19px);
+  font-size: clamp(14px, 0.35vw + 13px, 16px);
 }
 
-.map-chrome-head {
-  flex-shrink: 0;
-  z-index: 6;
-  display: flex;
-  align-items: flex-start;
-  justify-content: space-between;
-  gap: 1rem;
-  flex-wrap: wrap;
-  padding: 0.55rem 1.1rem 0.65rem;
-  background: #0d0f17;
-  border-top: 1px solid var(--border);
-  border-bottom: none;
-  pointer-events: none;
-}
-
-.map-chrome-head--below-map .chrome-cluster {
-  max-width: min(100%, 48rem);
-}
-
-.map-chrome-head a {
-  pointer-events: auto;
-}
-
-.chrome-cluster {
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-  flex: 1;
-  min-width: min(100%, 22rem);
-  max-width: 36rem;
-}
-
-.chrome-title {
-  display: flex;
-  flex-direction: column;
-  gap: 0.15rem;
-}
-
-.map-chrome-head .tag {
-  margin: 0;
-  letter-spacing: 0.08em;
-}
-
-.map-title {
-  margin: 0;
-  font-size: 1.45rem;
-  font-weight: 600;
-  letter-spacing: -0.02em;
-  color: var(--text);
-}
-
-.map-sub {
-  margin: 0;
-  font-size: 0.92rem;
-  line-height: 1.45;
-  color: var(--muted);
-  max-width: 46rem;
-}
-
-.chrome-hint {
-  font-size: 0.9rem;
-  color: var(--muted);
-  text-align: right;
-  max-width: 22rem;
-  line-height: 1.35;
-}
-
-.timeline-host {
-  flex-shrink: 0;
-  z-index: 5;
-  padding: 0.15rem 0.55rem 0.25rem;
-  background: rgba(10, 12, 20, 0.98);
-  border-top: 1px solid rgba(55, 60, 82, 0.85);
-  border-bottom: 1px solid rgba(55, 60, 82, 0.85);
-  pointer-events: auto;
-}
-
-.timeline-caption {
-  margin: 0 0 0.15rem;
-  font-size: 0.72rem;
-  line-height: 1.35;
-  color: var(--muted);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  max-width: 56rem;
-}
-
-#timeline-svg {
-  display: block;
-  width: 100%;
-  height: 56px;
-}
-
-#timeline-svg .tick text {
-  fill: var(--muted);
-  font-size: 0.58rem;
-}
-
-#timeline-svg .domain,
-#timeline-svg .tick line {
-  stroke: rgba(90, 96, 120, 0.65);
-}
-
-.fullscreen-map > .controls {
-  position: relative;
-  flex-shrink: 0;
-  z-index: 5;
-  margin: 0;
-  border-radius: 0;
-  border: none;
-  border-top: 1px solid var(--border);
-  background: rgba(12, 14, 22, 0.96);
-  backdrop-filter: blur(10px);
-  max-height: min(30vh, 220px);
-  overflow-y: auto;
-  padding: 0.85rem 1.15rem 1rem;
-}
-
-.fullscreen-map > .controls .control {
-  min-width: min(100%, 280px);
-}
-
-.fullscreen-map > .controls strong {
-  letter-spacing: 0.02em;
-}
-
-/* Map + side rail: nothing floats over the basemap. */
+/* ——— Map: full width, takes all remaining flex space above the fold ——— */
 .fullscreen-map .map-workspace {
   flex: 1 1 0;
   display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  gap: 0.55rem;
+  flex-direction: column;
   min-height: 0;
-  padding: 0 0.45rem 0.15rem;
+  padding: 0;
 }
 
 .fullscreen-map .map-main {
   flex: 1 1 auto;
-  min-width: 0;
   min-height: 0;
+  min-width: 0;
   position: relative;
 }
 
 .fullscreen-map .map-canvas-stack {
   position: absolute;
   inset: 0;
-  border-radius: 12px;
+  border-radius: 0;
   overflow: hidden;
-}
-
-.fullscreen-map .map-rail {
-  flex: 0 0 var(--rail-width);
-  width: var(--rail-width);
-  max-width: min(var(--rail-width), 100%);
-  display: flex;
-  flex-direction: column;
-  gap: 0.55rem;
-  min-height: 0;
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding: 0.4rem 0.45rem 0.45rem;
-  background: rgba(11, 13, 20, 0.94);
-  border: 1px solid rgba(55, 60, 82, 0.88);
-  border-radius: 12px;
-}
-
-.fullscreen-map .map-rail-stats {
-  flex-shrink: 0;
-  font-size: 0.86rem;
-  font-weight: 500;
-  padding: 0.4rem 0.55rem;
-  border-radius: 999px;
-  background: rgba(18, 21, 34, 0.98);
-  border: 1px solid rgba(70, 76, 100, 0.9);
-  color: var(--text);
-  letter-spacing: 0.02em;
-  text-align: center;
-}
-
-.fullscreen-map .map-rail .insights-card {
-  position: static;
-  width: 100%;
-  max-width: none;
-  flex-shrink: 0;
-  padding: 0.5rem 0.55rem 0.55rem;
-  border-radius: 10px;
-  background: rgba(14, 16, 26, 0.98);
-  border: 1px solid rgba(60, 66, 90, 0.85);
-  pointer-events: auto;
-}
-
-.insights-title {
-  margin: 0 0 0.35rem;
-  font-size: 0.72rem;
-  font-weight: 600;
-  letter-spacing: 0.09em;
-  text-transform: uppercase;
-  color: #c9d7ff;
-}
-
-.insights-list {
-  margin: 0;
-  padding-left: 1rem;
-  font-size: 0.76rem;
-  line-height: 1.45;
-  color: var(--text);
-}
-
-.insights-list li {
-  margin: 0.2rem 0;
-}
-
-.insights-list strong {
-  color: #e8ecff;
-  font-weight: 600;
-}
-
-.checkbox-label {
-  display: flex;
-  align-items: flex-start;
-  gap: 0.45rem;
-  font-size: 0.82rem;
-  color: var(--muted);
-  font-weight: 400;
-  cursor: pointer;
-  max-width: 18rem;
-}
-
-.checkbox-label input {
-  margin-top: 0.2rem;
-  flex-shrink: 0;
-  accent-color: #6b9fff;
 }
 
 .fullscreen-map #map-wrap {
@@ -287,31 +72,9 @@ body {
     linear-gradient(180deg, #1a4a66 0%, #143d56 42%, #0f2f44 100%);
 }
 
-/* Flat stack: SVG + canvas share the same box (no 3D tilt). */
 .map-stage {
   position: absolute;
   inset: 0;
-}
-
-@media (max-height: 780px) {
-  .map-chrome-head {
-    padding: 0.45rem 0.75rem 0.5rem;
-  }
-
-  .map-sub {
-    display: -webkit-box;
-    -webkit-line-clamp: 2;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-  }
-
-  .map-chrome-head .map-legend {
-    padding: 0.35rem 0.5rem 0.4rem;
-  }
-
-  #timeline-svg {
-    height: 48px;
-  }
 }
 
 .map-stage #map-svg,
@@ -322,7 +85,6 @@ body {
   height: 100%;
 }
 
-/* style.css sets a large min-height on #map-wrap svg — defeats the flex map; reset in fullscreen */
 .fullscreen-map #map-wrap #map-svg {
   min-height: 0 !important;
 }
@@ -342,91 +104,245 @@ body {
   pointer-events: none;
 }
 
-.fullscreen-map .map-rail .detail-panel {
-  position: static;
-  top: auto;
-  right: auto;
-  z-index: 1;
+/* ——— Timeline ——— */
+.timeline-host {
+  flex-shrink: 0;
+  padding: 0.2rem 0.65rem 0.35rem;
+  background: #0a0c14;
+  border-top: 1px solid rgba(55, 60, 82, 0.9);
+  border-bottom: 1px solid rgba(55, 60, 82, 0.9);
+}
+
+.timeline-caption {
+  margin: 0 0 0.1rem;
+  font-size: 0.62rem;
+  line-height: 1.3;
+  color: var(--muted);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+#timeline-svg {
+  display: block;
   width: 100%;
-  max-width: none;
-  flex: 1 1 auto;
-  min-height: 11rem;
-  max-height: min(58vh, 620px);
+  height: 48px;
+}
+
+#timeline-svg .tick text {
+  fill: var(--muted);
+  font-size: 0.55rem;
+}
+
+#timeline-svg .domain,
+#timeline-svg .tick line {
+  stroke: rgba(90, 96, 120, 0.65);
+}
+
+/* ——— Stats + insights + inspector (horizontal band, not beside map) ——— */
+.info-deck {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: minmax(10rem, 14rem) minmax(12rem, 1fr) minmax(14rem, 20rem);
+  gap: 0.5rem 0.65rem;
+  align-items: stretch;
+  padding: 0.45rem 0.65rem;
+  max-height: min(26vh, 240px);
+  min-height: 0;
+  overflow: auto;
+  background: #0d1018;
+  border-bottom: 1px solid var(--border);
+}
+
+.stat-chip {
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.45rem 0.55rem;
+  border-radius: 10px;
+  background: rgba(22, 26, 42, 0.98);
+  border: 1px solid rgba(70, 76, 100, 0.85);
+  color: var(--text);
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1.25;
+}
+
+.insights-card {
+  padding: 0.4rem 0.55rem;
+  border-radius: 10px;
+  background: rgba(14, 16, 26, 0.98);
+  border: 1px solid rgba(60, 66, 90, 0.85);
+  min-width: 0;
+  overflow: auto;
+}
+
+.insights-title {
+  margin: 0 0 0.25rem;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #b8c8ff;
+}
+
+.insights-list {
   margin: 0;
+  padding-left: 1rem;
+  font-size: 0.72rem;
+  line-height: 1.35;
+  color: var(--text);
+}
+
+.insights-list li {
+  margin: 0.12rem 0;
+}
+
+.insights-list strong {
+  color: #e8ecff;
+  font-weight: 600;
+}
+
+.fullscreen-map .info-deck .detail-panel {
+  position: static;
+  min-height: 0;
+  max-height: min(24vh, 220px);
   overflow-y: auto;
   background: rgba(14, 16, 26, 0.98);
-  backdrop-filter: blur(12px);
-  box-shadow: none;
-  border-radius: 12px;
-  padding: 0;
   border: 1px solid rgba(60, 66, 90, 0.85);
+  border-radius: 10px;
+  padding: 0;
+  margin: 0;
+  box-shadow: none;
 }
 
 .panel-head {
-  padding: 0.95rem 1.05rem 0.65rem;
+  padding: 0.45rem 0.65rem 0.35rem;
   border-bottom: 1px solid var(--border);
-  background: linear-gradient(180deg, rgba(32, 36, 54, 0.45) 0%, transparent 100%);
+  background: linear-gradient(180deg, rgba(32, 36, 54, 0.4) 0%, transparent 100%);
 }
 
 .panel-title {
   margin: 0;
-  font-size: 1.08rem;
+  font-size: 0.88rem;
   font-weight: 600;
-  letter-spacing: 0.01em;
 }
 
 .panel-sub {
-  margin: 0.2rem 0 0;
-  font-size: 0.84rem;
+  margin: 0.1rem 0 0;
+  font-size: 0.68rem;
   color: var(--muted);
 }
 
 .fullscreen-map .detail-panel .detail-empty,
 .fullscreen-map .detail-panel dl {
-  padding: 0 1.05rem 1rem;
+  padding: 0 0.65rem 0.65rem;
 }
 
 .fullscreen-map .detail-panel .detail-empty {
   margin: 0;
-  padding-top: 1rem;
-  font-size: 0.86rem;
-  line-height: 1.5;
+  padding-top: 0.5rem;
+  font-size: 0.76rem;
+  line-height: 1.4;
+}
+
+.fullscreen-map .detail-panel dl {
+  margin: 0;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.25rem 0.5rem;
+  font-size: 0.74rem;
+}
+
+/* ——— Compact title row ——— */
+.map-chrome-head {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.35rem 0.75rem;
+  align-items: start;
+  padding: 0.45rem 0.65rem 0.5rem;
+  background: #0b0d14;
+  border-bottom: 1px solid var(--border);
+}
+
+.chrome-cluster--inline {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: 0.5rem 1rem;
+  min-width: 0;
+}
+
+.chrome-title {
+  display: flex;
+  flex-direction: column;
+  gap: 0.08rem;
+  min-width: min(100%, 18rem);
+  flex: 1 1 auto;
+}
+
+.map-chrome-head .tag {
+  margin: 0;
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  color: var(--muted);
+}
+
+.map-title {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--text);
+  line-height: 1.2;
+}
+
+.map-sub--toolbar {
+  grid-column: 1 / -1;
+  margin: 0;
+  padding: 0;
+  font-size: 0.74rem;
+  line-height: 1.35;
+  color: var(--muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .map-chrome-head .map-legend {
   display: grid;
   grid-template-columns: auto 1fr auto auto;
   grid-template-rows: auto auto;
-  gap: 0.2rem 0.5rem;
-  align-items: center;
-  pointer-events: none;
-  padding: 0.45rem 0.6rem 0.5rem;
+  gap: 0.12rem 0.35rem;
+  padding: 0.35rem 0.45rem;
   border-radius: 8px;
   background: #12141e;
   border: 1px solid var(--border);
-  max-width: min(100%, 20rem);
+  flex: 0 0 auto;
+  min-width: 9rem;
 }
 
 .legend-title {
   grid-column: 1 / -1;
-  font-size: 0.68rem;
+  font-size: 0.58rem;
   text-transform: uppercase;
-  letter-spacing: 0.11em;
+  letter-spacing: 0.1em;
   color: var(--muted);
 }
 
 .legend-scale {
   grid-column: 1 / -1;
-  height: 8px;
+  height: 6px;
   border-radius: 999px;
   background: linear-gradient(90deg, #ffe5a8 0%, #ffb020 50%, #ff7a00 100%);
-  opacity: 0.95;
-  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
 }
 
 .legend-low,
 .legend-high {
-  font-size: 0.68rem;
+  font-size: 0.58rem;
   color: var(--muted);
 }
 
@@ -438,58 +354,108 @@ body {
   justify-self: end;
 }
 
-@media (max-width: 880px) {
-  .fullscreen-map {
-    --rail-width: 100%;
+.chrome-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.2rem;
+  text-align: right;
+}
+
+.writeup-jump {
+  color: #9ec5ff;
+  font-size: 0.74rem;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.writeup-jump:hover {
+  text-decoration: underline;
+}
+
+.chrome-hint {
+  font-size: 0.68rem;
+  color: var(--muted);
+  line-height: 1.3;
+  max-width: 16rem;
+}
+
+/* ——— Filters: dense grid ——— */
+.fullscreen-map > .controls {
+  flex-shrink: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.45rem 0.75rem;
+  align-items: start;
+  padding: 0.5rem 0.65rem 0.6rem;
+  max-height: min(20vh, 200px);
+  overflow-y: auto;
+  border-top: 1px solid var(--border);
+  background: rgba(12, 14, 22, 0.98);
+}
+
+.fullscreen-map > .controls .control {
+  min-width: 0;
+}
+
+.fullscreen-map > .controls strong {
+  display: block;
+  margin-bottom: 0.15rem;
+  font-size: 0.68rem;
+  letter-spacing: 0.02em;
+  color: var(--muted);
+}
+
+.control input[type="range"] {
+  width: 100%;
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.35rem;
+  font-size: 0.72rem;
+  color: var(--muted);
+  cursor: pointer;
+}
+
+.checkbox-label input {
+  margin-top: 0.12rem;
+  accent-color: #6b9fff;
+}
+
+@media (max-width: 900px) {
+  .info-deck {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto auto;
+    max-height: min(38vh, 360px);
+  }
+
+  .fullscreen-map .info-deck .detail-panel {
+    max-height: min(22vh, 200px);
   }
 
   .map-chrome-head {
-    padding-top: 0.5rem;
+    grid-template-columns: 1fr;
   }
 
-  .map-title {
-    font-size: 1.22rem;
-  }
-
-  .fullscreen-map .map-workspace {
-    flex-direction: column;
-    gap: 0.45rem;
-    padding: 0.15rem 0.35rem 0.2rem;
-  }
-
-  .fullscreen-map .map-main {
-    flex: 1 1 min(48dvh, 520px);
-    min-height: min(46dvh, 480px);
-  }
-
-  .fullscreen-map .map-rail {
-    flex: 0 1 auto;
-    width: 100%;
-    max-width: none;
-    max-height: min(40vh, 340px);
-    flex-direction: column;
-  }
-
-  .fullscreen-map .map-rail .detail-panel {
-    max-height: min(28vh, 280px);
-  }
-
-  .fullscreen-map > .controls {
-    max-height: min(34vh, 260px);
-  }
-
-  .chrome-cluster {
-    max-width: none;
-  }
-
-  .map-chrome-head .map-legend {
+  .chrome-actions {
+    align-items: flex-start;
+    text-align: left;
     max-width: none;
   }
 
   .chrome-hint {
-    text-align: left;
     max-width: none;
-    width: 100%;
-    padding-bottom: 0.15rem;
+  }
+
+  .fullscreen-map > .controls {
+    max-height: min(28vh, 260px);
+  }
+}
+
+@media (max-height: 720px) {
+  #timeline-svg {
+    height: 40px;
   }
 }
