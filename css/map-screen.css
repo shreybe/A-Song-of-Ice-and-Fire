@@ -167,8 +167,8 @@ body {
 .insights-card {
   position: absolute;
   left: 0.5rem;
-  /* Tuck above the control drawer so the map center stays unobstructed */
-  bottom: calc(var(--drawer-cap) + 2.85rem);
+  /* Sit just above the drawer (lower on the map than a large top offset). */
+  bottom: calc(var(--drawer-cap) + 1rem);
   top: auto;
   z-index: 5;
   width: min(17.5rem, calc(100vw - 22rem));
@@ -402,7 +402,8 @@ body {
 
 .fullscreen-map .map-stats-banner {
   position: absolute;
-  left: 0.75rem;
+  left: auto;
+  right: 0.75rem;
   bottom: calc(var(--drawer-cap) + 0.65rem);
   z-index: 4;
   margin: 0;
@@ -440,7 +441,7 @@ body {
     right: 0.5rem;
     left: 0.5rem;
     top: auto;
-    bottom: calc(var(--drawer-cap) + 2.75rem);
+    bottom: calc(var(--drawer-cap) + 0.85rem);
   }
 
   .fullscreen-map > .controls {
@@ -459,8 +460,8 @@ body {
 
   .fullscreen-map .map-stats-banner {
     bottom: calc(var(--drawer-cap) + 0.55rem);
-    left: 0.5rem;
-    right: auto;
+    left: auto;
+    right: 0.5rem;
     max-width: calc(100vw - 1rem);
   }
 
