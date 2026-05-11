@@ -36,9 +36,20 @@
           </div>
           <div class="chrome-actions">
             <a class="writeup-jump" href="#writeup">Design write-up &amp; process ↓</a>
-            <span class="chrome-hint">Wheel / pinch zoom · drag pan · tap a hotspot</span>
+            <span class="chrome-hint">
+              Wheel / pinch zoom · drag pan · tap a hotspot · double-click timeline to reset dates
+            </span>
           </div>
         </header>
+
+        <div id="timeline-host" class="timeline-host">
+          <p class="timeline-caption">
+            Daily detection rhythm (respects confidence &amp; pass filters) · click a bar to snap the date sliders
+            to that day
+          </p>
+          <svg id="timeline-svg" role="img" aria-label="Daily detection counts across the dataset timeline"></svg>
+        </div>
+
         <div class="controls">
           <div class="control">
             <strong>Acquisition date range</strong>
@@ -62,9 +73,20 @@
             <strong>Reset</strong>
             <button type="button" id="btn-reset">Reset all filters</button>
           </div>
+          <div class="control control-spotlight">
+            <strong>Spotlight</strong>
+            <label class="checkbox-label">
+              <input type="checkbox" id="chk-peak-frp" />
+              Crosshair on strongest FRP in the filtered map
+            </label>
+          </div>
         </div>
 
         <div class="map-body">
+          <aside id="insights-card" class="insights-card" aria-live="polite">
+            <h4 class="insights-title">Live insights</h4>
+            <ul id="insights-list" class="insights-list"></ul>
+          </aside>
           <div id="map-stats" class="map-stats-banner" role="status"></div>
           <div class="map-layout">
             <div id="map-wrap">
@@ -128,6 +150,31 @@
         small-scale map rather than a flat gray silhouette, while keeping implementation in D3-drawn
         geometry rather than raster tiles.
       </p>
+
+      <h2>Creative extensions (originality)</h2>
+      <p>
+        Beyond the core map + filters, we added three deliberately linked pieces—all implemented in
+        <strong>D3</strong> (no extra plotting libraries):
+      </p>
+      <ul>
+        <li>
+          <strong>Temporal activity strip.</strong> A compact bar chart of <em>per-day</em> detection counts
+          after confidence and day/night filters, with a translucent overlay for the currently selected date
+          window. Clicking a day <strong>snaps both date sliders</strong> to that acquisition day so the map
+          and summary re-focus instantly—a small multiple-view / dynamic-query hybrid.
+        </li>
+        <li>
+          <strong>Live insight bullets.</strong> Short, automatically recomputed sentences summarize the
+          <em>filtered</em> subset (busiest calendar day in the window, which coarse longitude band carries the
+          plurality of points, and the strongest FRP event currently visible). These are meant as narrative
+          anchors, not replacements for reading individual points.
+        </li>
+        <li>
+          <strong>Spotlight mode.</strong> An optional crosshair on the single highest-FRP detection in the
+          current filtered set, to draw attention to extreme events without permanently distorting the size
+          scale for every point.
+        </li>
+      </ul>
 
       <h2>Data and transformations</h2>
       <p>
@@ -197,7 +244,8 @@
         wrangling, exploratory plotting, implementing filters and zoom, aligning SVG with canvas for crisp
         projection, polishing layout for small screens, and writing this rationale. The longest arc was
         iteration on interaction polish (hit targets, resize behavior, and keeping the map readable when many
-        points overlap).
+        points overlap). Adding the linked timeline, live insight sentences, and optional FRP spotlight took
+        additional design and testing time.
       </p>
       <p>
         <strong>Implementation constraints.</strong> The interactive graphic uses <strong>D3 v7</strong> and

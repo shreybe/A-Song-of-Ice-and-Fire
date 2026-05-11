@@ -27,6 +27,8 @@
     minConf: 0,
     minDateIdx: 0,
     maxDateIdx: 0,
+    /** Creative extension: optional crosshair on max-FRP point in filtered set */
+    showPeakHighlight: false,
   };
 
   /** @type {CanvasRenderingContext2D | null} */
@@ -49,6 +51,156 @@
       if (d.daynight === "N" && !state.allowNight) return false;
       return true;
     });
+  }
+
+  /** Same as applyFilters but omit date window — drives the linked activity strip. */
+  function applyFiltersNoDateRange(data) {
+    return data.filter((d) => {
+      if (d.confidence < state.minConf) return false;
+      if (d.daynight === "D" && !state.allowDay) return false;
+      if (d.daynight === "N" && !state.allowNight) return false;
+      return true;
+    });
+  }
+
+  function dailyCountsForTimeline() {
+    const rows = applyFiltersNoDateRange(state.raw);
+    const byDay = d3.rollup(rows, (v) => v.length, (d) => d.acq_date.getTime());
+    return state.dates.map((d) => byDay.get(d.getTime()) || 0);
+  }
+
+  function drawActivityTimeline() {
+    const host = document.getElementById("timeline-host");
+    const svgEl = document.getElementById("timeline-svg");
+    if (!host || !svgEl || !state.dates.length) return;
+
+    const counts = dailyCountsForTimeline();
+    const n = counts.length;
+    const margin = { top: 2, right: 8, bottom: 16, left: 34 };
+    const bw = host.getBoundingClientRect().width;
+    const fallbackW = document.querySelector(".fullscreen-map")?.clientWidth ?? 640;
+    const w = Math.max(240, Math.floor(bw > 12 ? bw : fallbackW));
+    const h = 56;
+    const innerW = w - margin.left - margin.right;
+    const innerH = h - margin.top - margin.bottom;
+    const maxC = d3.max(counts) || 1;
+    const y = d3.scaleLinear().domain([0, maxC]).nice().range([innerH, 0]);
+    const color = d3.scaleSequential((t) => d3.interpolateRgb("#4a6fa5", "#ff9a3c")(t)).domain([0, maxC]);
+    const xb = d3
+      .scaleBand()
+      .domain(Array.from({ length: n }, (_, i) => i))
+      .range([0, innerW])
+      .paddingInner(0.06);
+    const barData = counts.map((c, i) => ({ i, c }));
+
+    const svg = d3.select(svgEl);
+    svg.selectAll("*").remove();
+    svg.attr("viewBox", `0 0 ${w} ${h}`).attr("width", w).attr("height", h);
+    svg.append("title").text("Per-day detection counts after confidence and pass filters; taller bars are busier days.");
+
+    const g = svg.append("g").attr("transform", `translate(${margin.left},${margin.top})`);
+
+    g.append("text")
+      .attr("x", -4)
+      .attr("y", innerH / 2)
+      .attr("text-anchor", "end")
+      .attr("dominant-baseline", "middle")
+      .attr("fill", "rgba(150,156,180,0.9)")
+      .attr("font-size", "9px")
+      .text("count");
+
+    g.append("rect")
+      .attr("width", innerW)
+      .attr("height", innerH)
+      .attr("fill", "transparent")
+      .style("cursor", "default")
+      .on("dblclick", (ev) => {
+        ev.preventDefault();
+        state.minDateIdx = 0;
+        state.maxDateIdx = state.dates.length - 1;
+        document.getElementById("date-min").value = "0";
+        document.getElementById("date-max").value = String(state.dates.length - 1);
+        refresh();
+      });
+
+    const i0 = Math.min(state.minDateIdx, state.maxDateIdx);
+    const i1 = Math.max(state.minDateIdx, state.maxDateIdx);
+    g.append("rect")
+      .attr("x", xb(i0) ?? 0)
+      .attr("width", Math.max(xb.bandwidth(), (xb(i1) ?? 0) + xb.bandwidth() - (xb(i0) ?? 0)))
+      .attr("y", 0)
+      .attr("height", innerH)
+      .attr("fill", "rgba(255, 210, 120, 0.14)")
+      .attr("stroke", "rgba(255, 210, 140, 0.35)")
+      .attr("stroke-width", 1)
+      .attr("pointer-events", "none");
+
+    const bars = g
+      .selectAll("rect.bar")
+      .data(barData)
+      .join("rect")
+      .attr("class", "bar")
+      .attr("x", (d) => xb(d.i))
+      .attr("width", xb.bandwidth())
+      .attr("y", (d) => y(d.c))
+      .attr("height", (d) => innerH - y(d.c))
+      .attr("fill", (d) => color(d.c))
+      .attr("rx", 1.5)
+      .style("cursor", "pointer")
+      .on("click", (ev, d) => {
+        ev.stopPropagation();
+        state.minDateIdx = d.i;
+        state.maxDateIdx = d.i;
+        document.getElementById("date-min").value = String(d.i);
+        document.getElementById("date-max").value = String(d.i);
+        refresh();
+      });
+
+    bars.append("title").text((d) => `${fmtDate(state.dates[d.i])}: ${d.c} detection(s)`);
+
+    const tickIdx = Array.from(
+      new Set([0, Math.floor(n * 0.25), Math.floor(n * 0.5), Math.floor(n * 0.75), n - 1].filter((k) => k >= 0 && k < n))
+    ).sort(d3.ascending);
+
+    g.append("g")
+      .attr("transform", `translate(0,${innerH})`)
+      .call(
+        d3
+          .axisBottom(xb)
+          .tickValues(tickIdx)
+          .tickFormat((d) => fmtShort(state.dates[+d]))
+          .tickSizeOuter(0)
+      );
+  }
+
+  function updateInsights(filtered) {
+    const ul = document.getElementById("insights-list");
+    if (!ul) return;
+    if (!filtered.length) {
+      ul.innerHTML = "<li>No detections in the current date window.</li>";
+      return;
+    }
+
+    const byDay = d3.rollup(filtered, (v) => v.length, (d) => d.acq_date.getTime());
+    const sortedDays = [...byDay.entries()].sort((a, b) => b[1] - a[1]);
+    const peakDay = sortedDays[0];
+    const busiest = peakDay ? fmtDate(new Date(peakDay[0])) : "—";
+    const bestN = peakDay ? peakDay[1] : 0;
+
+    const byReg = d3.rollup(filtered, (v) => v.length, (d) => regionLabel(d.longitude));
+    const total = filtered.length;
+    const sortedReg = [...byReg.entries()].sort((a, b) => b[1] - a[1]);
+    const [topName, topC] = sortedReg[0] || ["—", 0];
+    const topPct = total ? ((topC / total) * 100).toFixed(0) : "0";
+
+    const topFrp = d3.max(filtered, (d) => d.frp) || 0;
+    const topFrpRow = filtered.find((d) => d.frp === topFrp) || filtered[0];
+
+    ul.innerHTML = [
+      `<li><strong>Busiest day</strong> in the selected window: <strong>${busiest}</strong> (${bestN} pts).</li>`,
+      `<li><strong>Regional plurality:</strong> <strong>${topName}</strong> (${topPct}% of filtered points).</li>`,
+      `<li><strong>Peak FRP here:</strong> <strong>${topFrp.toFixed(1)} MW</strong> on ${fmtDate(topFrpRow.acq_date)} (${topFrpRow.daynight === "D" ? "day" : "night"} pass).</li>`,
+    ].join("");
   }
 
   function renderDetail(d) {
@@ -248,6 +400,26 @@
       }
     }
 
+    if (state.showPeakHighlight && state.firesProjected.length) {
+      const peak = state.firesProjected.reduce((a, b) => (b.datum.frp > a.datum.frp ? b : a));
+      const { x: px, y: py, r } = peak;
+      const L = Math.max(10, r * 3.2);
+      ctx.strokeStyle = "rgba(255, 200, 110, 0.95)";
+      ctx.lineWidth = 2.2 / t.k;
+      ctx.beginPath();
+      ctx.moveTo(px - L, py);
+      ctx.lineTo(px + L, py);
+      ctx.moveTo(px, py - L);
+      ctx.lineTo(px, py + L);
+      ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(px - L * 0.7, py - L * 0.7);
+      ctx.lineTo(px + L * 0.7, py + L * 0.7);
+      ctx.moveTo(px + L * 0.7, py - L * 0.7);
+      ctx.lineTo(px - L * 0.7, py + L * 0.7);
+      ctx.stroke();
+    }
+
     ctx.restore();
   }
 
@@ -378,6 +550,9 @@
     document.getElementById("conf-label").textContent = `${state.minConf}%`;
     const stats = document.querySelector("#map-stats");
     if (stats) stats.textContent = `${filtered.length} / ${state.raw.length} hotspots shown`;
+
+    drawActivityTimeline();
+    updateInsights(filtered);
   }
 
   async function init() {
@@ -456,14 +631,25 @@
       state.zoomTransform = d3.zoomIdentity;
       state.minDateIdx = 0;
       state.maxDateIdx = state.dates.length - 1;
+      state.showPeakHighlight = false;
       document.getElementById("confidence").value = "0";
       document.getElementById("date-min").value = "0";
       document.getElementById("date-max").value = String(state.dates.length - 1);
       document.getElementById("btn-day").classList.add("active");
       document.getElementById("btn-night").classList.add("active");
+      const peakChk = document.getElementById("chk-peak-frp");
+      if (peakChk) peakChk.checked = false;
       renderDetail(null);
       refresh();
     });
+
+    const peakChk = document.getElementById("chk-peak-frp");
+    if (peakChk) {
+      peakChk.addEventListener("change", () => {
+        state.showPeakHighlight = peakChk.checked;
+        scheduleRedrawFires();
+      });
+    }
 
     refresh();
 
