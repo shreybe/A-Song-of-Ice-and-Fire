@@ -34,82 +34,89 @@
           </div>
         </div>
 
-        <div id="timeline-host" class="timeline-host">
-          <p class="timeline-caption">
-            Daily rhythm · click a bar for that day · double-click chart for full date range
-          </p>
-          <svg id="timeline-svg" role="img" aria-label="Daily detection counts across the dataset timeline"></svg>
-        </div>
-
-        <div class="info-deck" role="region" aria-label="Summary and hotspot details">
-          <div id="map-stats" class="stat-chip" role="status"></div>
-          <div id="insights-card" class="insights-card" aria-live="polite">
-            <h4 class="insights-title">Live insights</h4>
-            <ul id="insights-list" class="insights-list"></ul>
-          </div>
-          <aside class="detail-panel" id="detail-panel">
-            <div class="panel-head">
-              <h3 class="panel-title">Hotspot inspector</h3>
-              <p class="panel-sub">Tap the map</p>
-            </div>
-            <p class="detail-empty" id="detail-empty">
-              Click a hotspot on the map to load acquisition and intensity fields.
+        <div class="timeline-strip">
+          <div id="timeline-host" class="timeline-inner">
+            <p class="timeline-caption">
+              Daily rhythm · click a bar for that day · double-click chart for full date range
             </p>
-            <dl id="detail-dl" hidden></dl>
-          </aside>
+            <svg id="timeline-svg" role="img" aria-label="Daily detection counts across the dataset timeline"></svg>
+          </div>
         </div>
 
-        <header class="map-chrome-head">
-          <div class="chrome-cluster chrome-cluster--inline">
-            <div class="chrome-title">
-              <span class="tag">DSC 106 · NASA FIRMS · MODIS_NRT</span>
-              <h1 class="map-title">U.S. thermal hotspots — space &amp; time</h1>
+        <div class="dashboard-surface">
+          <div class="dashboard-inner">
+            <div class="info-deck" role="region" aria-label="Summary and hotspot details">
+              <div id="map-stats" class="stat-chip" role="status"></div>
+              <div id="insights-card" class="insights-card" aria-live="polite">
+                <h4 class="insights-title">Live insights</h4>
+                <ul id="insights-list" class="insights-list"></ul>
+              </div>
+              <aside class="detail-panel" id="detail-panel">
+                <div class="panel-head">
+                  <h3 class="panel-title">Hotspot inspector</h3>
+                  <p class="panel-sub">Select a point on the map</p>
+                </div>
+                <p class="detail-empty" id="detail-empty">
+                  Click a hotspot on the map to load acquisition and intensity fields.
+                </p>
+                <dl id="detail-dl" hidden></dl>
+              </aside>
             </div>
-            <div class="map-legend" aria-label="Map legend">
-              <span class="legend-title">Color → brightness (K)</span>
-              <span class="legend-scale" aria-hidden="true"></span>
-              <span class="legend-low">cooler</span>
-              <span class="legend-high">hotter</span>
-            </div>
-          </div>
-          <div class="chrome-actions">
-            <a class="writeup-jump" href="#writeup">Write-up ↓</a>
-            <span class="chrome-hint">Zoom · pan · tap point · dbl-click timeline resets dates</span>
-          </div>
-          <p class="map-sub map-sub--toolbar">
-            MODIS NRT detections (CONUS demo). Color = brightness (K), size = FRP (MW). Filters respect acquisition date, confidence, and pass.
-          </p>
-        </header>
 
-        <div class="controls">
-          <div class="control">
-            <strong>Acquisition date range</strong>
-            <span id="date-label"></span>
-            <input type="range" id="date-min" />
-            <input type="range" id="date-max" />
-          </div>
-          <div class="control">
-            <strong>Minimum confidence (%)</strong>
-            <span id="conf-label"></span>
-            <input type="range" id="confidence" min="0" max="100" step="5" value="0" />
-          </div>
-          <div class="control">
-            <strong>Pass</strong>
-            <div class="toggle-row">
-              <button type="button" id="btn-day" class="active">Day</button>
-              <button type="button" id="btn-night" class="active">Night</button>
+            <header class="map-chrome-head">
+              <div class="chrome-cluster chrome-cluster--inline">
+                <div class="chrome-title">
+                  <span class="tag">DSC 106 · NASA FIRMS · MODIS_NRT</span>
+                  <h1 class="map-title">U.S. thermal hotspots — space &amp; time</h1>
+                </div>
+                <div class="map-legend" aria-label="Map legend">
+                  <span class="legend-title">Color → brightness (K)</span>
+                  <span class="legend-scale" aria-hidden="true"></span>
+                  <span class="legend-low">cooler</span>
+                  <span class="legend-high">hotter</span>
+                </div>
+              </div>
+              <div class="chrome-actions">
+                <a class="writeup-jump" href="#writeup">Methodology &amp; write-up</a>
+                <span class="chrome-hint">Zoom · pan · tap point · double-click timeline resets dates</span>
+              </div>
+              <p class="map-sub map-sub--toolbar">
+                MODIS NRT detections (CONUS demo). Color = brightness (K), size = FRP (MW). Filters respect
+                acquisition date, confidence, and pass.
+              </p>
+            </header>
+
+            <div class="controls">
+              <div class="control">
+                <strong>Acquisition date range</strong>
+                <span id="date-label"></span>
+                <input type="range" id="date-min" />
+                <input type="range" id="date-max" />
+              </div>
+              <div class="control">
+                <strong>Minimum confidence (%)</strong>
+                <span id="conf-label"></span>
+                <input type="range" id="confidence" min="0" max="100" step="5" value="0" />
+              </div>
+              <div class="control">
+                <strong>Pass</strong>
+                <div class="toggle-row">
+                  <button type="button" id="btn-day" class="active">Day</button>
+                  <button type="button" id="btn-night" class="active">Night</button>
+                </div>
+              </div>
+              <div class="control">
+                <strong>Reset</strong>
+                <button type="button" id="btn-reset">Reset all filters</button>
+              </div>
+              <div class="control control-spotlight">
+                <strong>Spotlight</strong>
+                <label class="checkbox-label">
+                  <input type="checkbox" id="chk-peak-frp" />
+                  Crosshair on strongest FRP in the filtered map
+                </label>
+              </div>
             </div>
-          </div>
-          <div class="control">
-            <strong>Reset</strong>
-            <button type="button" id="btn-reset">Reset all filters</button>
-          </div>
-          <div class="control control-spotlight">
-            <strong>Spotlight</strong>
-            <label class="checkbox-label">
-              <input type="checkbox" id="chk-peak-frp" />
-              Crosshair on strongest FRP in the filtered map
-            </label>
           </div>
         </div>
       </section>
