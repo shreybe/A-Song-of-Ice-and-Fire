@@ -80,7 +80,7 @@
     const bw = host.getBoundingClientRect().width;
     const fallbackW = document.querySelector(".fullscreen-map")?.clientWidth ?? 640;
     const w = Math.max(240, Math.floor(bw > 12 ? bw : fallbackW));
-    const h = 50;
+    const h = 56;
     const innerW = w - margin.left - margin.right;
     const innerH = h - margin.top - margin.bottom;
     const maxC = d3.max(counts) || 1;
@@ -452,7 +452,7 @@
     let best = null;
     let bestD = Infinity;
 
-    const hitPx = Math.max(10, 22 / Math.sqrt(t.k));
+    const hitPx = Math.max(12, 26 / Math.sqrt(t.k));
     const hitSq = hitPx * hitPx;
 
     for (const p of state.firesProjected) {
@@ -508,7 +508,7 @@
     const canvas = document.getElementById("map-canvas");
 
     state.maxFrp = d3.max(state.raw, (d) => d.frp) || 1;
-    state.rScale = d3.scaleSqrt().domain([0, state.maxFrp]).range([2.2, 10]);
+    state.rScale = d3.scaleSqrt().domain([0, state.maxFrp]).range([3, 13]);
 
     if (!ctx && canvas) {
       ctx = canvas.getContext("2d");

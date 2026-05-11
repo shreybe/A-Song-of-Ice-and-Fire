@@ -14,12 +14,13 @@ body {
 .app-viewport {
   position: relative;
   height: 100dvh;
-  min-height: 520px;
+  min-height: 560px;
   max-height: 100dvh;
   overflow: hidden;
 }
 
 .fullscreen-map {
+  --drawer-cap: min(26vh, 190px);
   position: relative;
   display: flex;
   flex-direction: column;
@@ -30,6 +31,8 @@ body {
   height: 100%;
   min-height: 0;
   overflow: hidden;
+  /* Slightly larger base type inside the interactive shell (write-up uses global html size). */
+  font-size: clamp(16px, 0.45vw + 14.5px, 19px);
 }
 
 .map-chrome-head {
@@ -40,7 +43,7 @@ body {
   justify-content: space-between;
   gap: 1rem;
   flex-wrap: wrap;
-  padding: 0.65rem 1rem 0.75rem;
+  padding: 0.55rem 1.1rem 0.65rem;
   background: #0d0f17;
   border-bottom: 1px solid var(--border);
   pointer-events: none;
@@ -72,7 +75,7 @@ body {
 
 .map-title {
   margin: 0;
-  font-size: 1.15rem;
+  font-size: 1.45rem;
   font-weight: 600;
   letter-spacing: -0.02em;
   color: var(--text);
@@ -80,13 +83,14 @@ body {
 
 .map-sub {
   margin: 0;
-  font-size: 0.78rem;
+  font-size: 0.92rem;
+  line-height: 1.45;
   color: var(--muted);
-  max-width: 42rem;
+  max-width: 46rem;
 }
 
 .chrome-hint {
-  font-size: 0.78rem;
+  font-size: 0.9rem;
   color: var(--muted);
   text-align: right;
   max-width: 22rem;
@@ -104,7 +108,7 @@ body {
 
 .timeline-caption {
   margin: 0 0 0.15rem;
-  font-size: 0.62rem;
+  font-size: 0.72rem;
   line-height: 1.35;
   color: var(--muted);
   letter-spacing: 0.06em;
@@ -115,7 +119,7 @@ body {
 #timeline-svg {
   display: block;
   width: 100%;
-  height: 48px;
+  height: 56px;
 }
 
 #timeline-svg .tick text {
@@ -140,9 +144,9 @@ body {
   border-top: 1px solid var(--border);
   background: rgba(12, 14, 22, 0.96);
   backdrop-filter: blur(10px);
-  max-height: min(36vh, 240px);
+  max-height: var(--drawer-cap);
   overflow-y: auto;
-  padding: 0.85rem 1.1rem 1rem;
+  padding: 1rem 1.25rem 1.1rem;
 }
 
 .fullscreen-map > .controls .control {
@@ -157,14 +161,14 @@ body {
   flex: 1 1 0;
   position: relative;
   /* Never let the map strip shrink to an unreadable sliver (flex + grid align-items bug). */
-  min-height: min(52dvh, calc(100dvh - 14rem));
+  min-height: min(74dvh, calc(100dvh - 7.5rem));
 }
 
 .insights-card {
   position: absolute;
   left: 0.5rem;
   /* Tuck above the control drawer so the map center stays unobstructed */
-  bottom: calc(min(36vh, 240px) + 3.1rem);
+  bottom: calc(var(--drawer-cap) + 2.85rem);
   top: auto;
   z-index: 5;
   width: min(17.5rem, calc(100vw - 22rem));
@@ -254,16 +258,6 @@ body {
   inset: 0;
 }
 
-@media (max-width: 880px) {
-  .map-chrome-head {
-    padding-top: 0.5rem;
-  }
-
-  .map-title {
-    font-size: 1rem;
-  }
-}
-
 @media (max-height: 780px) {
   .map-chrome-head {
     padding: 0.45rem 0.75rem 0.5rem;
@@ -281,7 +275,7 @@ body {
   }
 
   #timeline-svg {
-    height: 42px;
+    height: 48px;
   }
 }
 
@@ -318,7 +312,7 @@ body {
   top: 0.75rem;
   right: 0.75rem;
   z-index: 4;
-  width: min(372px, calc(100vw - 1.5rem));
+  width: min(420px, calc(100vw - 1.5rem));
   max-height: calc(100% - 1.25rem);
   overflow-y: auto;
   min-height: 0;
@@ -338,14 +332,14 @@ body {
 
 .panel-title {
   margin: 0;
-  font-size: 0.95rem;
+  font-size: 1.08rem;
   font-weight: 600;
   letter-spacing: 0.01em;
 }
 
 .panel-sub {
   margin: 0.2rem 0 0;
-  font-size: 0.75rem;
+  font-size: 0.84rem;
   color: var(--muted);
 }
 
@@ -409,10 +403,10 @@ body {
 .fullscreen-map .map-stats-banner {
   position: absolute;
   left: 0.75rem;
-  bottom: calc(min(36vh, 240px) + 0.7rem);
+  bottom: calc(var(--drawer-cap) + 0.65rem);
   z-index: 4;
   margin: 0;
-  font-size: 0.8rem;
+  font-size: 0.92rem;
   font-weight: 500;
   padding: 0.4rem 0.72rem;
   border-radius: 999px;
@@ -424,23 +418,39 @@ body {
 }
 
 @media (max-width: 880px) {
+  .fullscreen-map {
+    --drawer-cap: min(40vh, 280px);
+  }
+
+  .map-chrome-head {
+    padding-top: 0.5rem;
+  }
+
+  .map-title {
+    font-size: 1.22rem;
+  }
+
+  .fullscreen-map .map-body {
+    min-height: min(68dvh, calc(100dvh - 10rem));
+  }
+
   .insights-card {
     width: auto;
     max-width: calc(100vw - 1rem);
     right: 0.5rem;
     left: 0.5rem;
     top: auto;
-    bottom: calc(min(46vh, 320px) + 3rem);
+    bottom: calc(var(--drawer-cap) + 2.75rem);
   }
 
   .fullscreen-map > .controls {
-    max-height: min(46vh, 320px);
+    max-height: var(--drawer-cap);
   }
 
   .fullscreen-map .detail-panel {
     top: auto;
-    bottom: calc(min(46vh, 320px) + 0.55rem);
-    max-height: min(38vh, 280px);
+    bottom: calc(var(--drawer-cap) + 0.55rem);
+    max-height: min(36vh, 260px);
     right: 0.5rem;
     left: 0.5rem;
     width: auto;
@@ -448,7 +458,7 @@ body {
   }
 
   .fullscreen-map .map-stats-banner {
-    bottom: calc(min(46vh, 320px) + 0.55rem);
+    bottom: calc(var(--drawer-cap) + 0.55rem);
     left: 0.5rem;
     right: auto;
     max-width: calc(100vw - 1rem);
